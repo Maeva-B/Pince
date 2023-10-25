@@ -2,4 +2,10 @@
     <string name="app_name">Pince</string>
     <string name="vieillissement_de_la_pince">Vieillissement de la pince</string>
     <string name="nb_utilisations">15 utilisations</string>
+
+    <string-array name="choices">
+        <item>titi</item>
+        <item>toto</item>
+        <item>tata</item>
+    </string-array>
 </resources>
