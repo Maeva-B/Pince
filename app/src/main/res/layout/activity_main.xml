@@ -71,13 +71,13 @@
         android:layout_marginTop="100dp"
         android:layout_marginBottom="400dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="#F8F8FB"
+        android:gravity="center">
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="37dp"
             android:layout_weight="1">
 
             <com.google.android.material.tabs.TabLayout
@@ -104,106 +104,109 @@
             </com.google.android.material.tabs.TabLayout>
         </androidx.viewpager.widget.ViewPager>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.cardview.widget.CardView
             android:id="@+id/presetLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="1200px"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@color/transparent"
+            app:cardBackgroundColor="#00FFFFFF"
+            app:cardElevation="0dp">
 
             <!-- LinearLayout horizontal pour regrouper Spinner et les boutons -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:elevation="0dp"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0">
+                android:translationZ="0dp">
 
                 <!-- Spinner -->
                 <Spinner
                     android:id="@+id/spinner"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:entries="@array/choices"
                     android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"/>
+                    android:layout_marginEnd="20dp"
+                    android:layout_weight="1"
+                    android:entries="@array/choices" />
 
                 <!-- Button 1 -->
                 <Button
                     android:id="@+id/presetButton1"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/yellow"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
                     android:padding="8dp"
                     android:text="Actionner la pince"
-                    android:textColor="@color/black"
-                    android:layout_marginEnd="20dp"
-                    />
+                    android:textColor="@color/black" />
 
                 <!-- Button 2 -->
                 <Button
                     android:id="@+id/presetButton2"
-                    android:layout_width="10px"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
                     android:layout_weight="1"
-                    android:text="Arrêt d’urgence"
                     android:backgroundTint="@color/red"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
                     android:padding="8dp"
-                    android:textColor="@color/black"
-                    android:layout_marginEnd="20dp"/>
+                    android:text="Arrêt d’urgence"
+                    android:textColor="@color/black" />
             </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.cardview.widget.CardView
             android:id="@+id/personalisableLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="1200px"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@color/transparent"
+            android:elevation="4dp"
+            android:radius="20dp"
+            app:cardBackgroundColor="#00FFFFFF"
+            app:cardElevation="0dp">
 
             <!-- LinearLayout horizontal pour regrouper EditText et le bouton -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0">
+                android:orientation="horizontal">
 
                 <!-- EditText -->
                 <EditText
                     android:id="@+id/addTextPreset"
-                    android:layout_width="500px"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Entrez le preset"
+                    android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"/>
+                    android:layout_weight="1"
+                    android:hint="Entrez le preset" />
 
                 <!-- Button 3 -->
                 <Button
                     android:id="@+id/presetButton3"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Enregistrer comme preset"
-                    android:backgroundTint="@color/blue"
-                    android:textColor="@color/black"
+                    android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"/>
-
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/blue"
+                    android:text="Enregistrer comme preset"
+                    android:textColor="@color/black" />
             </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
+
 
 
 
