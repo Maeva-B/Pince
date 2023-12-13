@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.view.View;
 
@@ -62,10 +64,14 @@ public class MainActivity extends AppCompatActivity {
                     Button presetButton2 = findViewById(R.id.presetButton2);
                     Button presetButton3 = findViewById(R.id.presetButton3);
                     Button presetButton4 = findViewById(R.id.presetButton4);
+                    EditText editTexteInput = findViewById(R.id.addTextPreset);
+                    Spinner spinnerPreset = findViewById(R.id.spinner);
                     presetButton1.setVisibility(View.VISIBLE);
                     presetButton2.setVisibility(View.VISIBLE);
+                    spinnerPreset.setVisibility(View.VISIBLE);
                     presetButton3.setVisibility(View.GONE);
                     presetButton4.setVisibility(View.GONE);
+                    editTexteInput.setVisibility(View.GONE);
                 }
                 // L'onglet "Personnalisable" est sélectionné
                 else if (tab.getPosition() == 1) {
@@ -73,10 +79,14 @@ public class MainActivity extends AppCompatActivity {
                     Button presetButton2 = findViewById(R.id.presetButton2);
                     Button presetButton3 = findViewById(R.id.presetButton3);
                     Button presetButton4 = findViewById(R.id.presetButton4);
+                    EditText editTexteInput = findViewById(R.id.addTextPreset);
+                    Spinner spinnerPreset = findViewById(R.id.spinner);
                     presetButton1.setVisibility(View.GONE);
                     presetButton2.setVisibility(View.GONE);
+                    spinnerPreset.setVisibility(View.GONE);
                     presetButton3.setVisibility(View.VISIBLE);
                     presetButton4.setVisibility(View.VISIBLE);
+                    editTexteInput.setVisibility(View.VISIBLE);
                 }
             }
 

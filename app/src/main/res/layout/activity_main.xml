@@ -157,6 +157,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <EditText
+                android:id="@+id/addTextPreset"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Entrez le preset"
+                app:layout_constraintBottom_toTopOf="@id/presetButton3"
+                app:layout_constraintEnd_toStartOf="@id/presetButton4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <Button
                 android:id="@+id/presetButton3"
                 android:layout_width="wrap_content"
