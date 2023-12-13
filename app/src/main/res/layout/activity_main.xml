@@ -64,9 +64,7 @@
 
     </LinearLayout>
 
-
     <!-- Onglets -->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -87,24 +85,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:tabGravity="center"
-                app:tabMode="fixed">
+                app:tabIconTint="@color/black"
+                app:tabIndicatorColor="@color/black"
+                app:tabMode="fixed"
+                app:tabTextColor="@color/black">
 
                 <!-- Onglets 0 - Preset -->
-
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Preset" />
 
-
                 <!-- Onglets 1 - Personnalisable -->
-
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Ajouter un preset" />
             </com.google.android.material.tabs.TabLayout>
-
         </androidx.viewpager.widget.ViewPager>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -112,74 +109,102 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Spinner -->
-            <Spinner
-                android:id="@+id/spinner"
+            <!-- LinearLayout horizontal pour regrouper Spinner et les boutons -->
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:entries="@array/choices"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/presetButton1"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <!-- Button 1 -->
-            <Button
-                android:id="@+id/presetButton1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@color/yellow"
-                android:text="Actionner la pince"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/presetButton2"
-                app:layout_constraintStart_toEndOf="@id/spinner"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <!-- Button 2 -->
-            <Button
-                android:id="@+id/presetButton2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Arret d’urgence"
-                android:background="@color/red"
+                android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/presetButton1"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0">
 
+                <!-- Spinner -->
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:entries="@array/choices"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"/>
+
+                <!-- Button 1 -->
+                <Button
+                    android:id="@+id/presetButton1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/yellow"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:padding="8dp"
+                    android:text="Actionner la pince"
+                    android:textColor="@color/black"
+                    android:layout_marginEnd="20dp"
+                    />
+
+                <!-- Button 2 -->
+                <Button
+                    android:id="@+id/presetButton2"
+                    android:layout_width="10px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Arrêt d’urgence"
+                    android:backgroundTint="@color/red"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:padding="8dp"
+                    android:textColor="@color/black"
+                    android:layout_marginEnd="20dp"/>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/personalisableLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/addTextPreset"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:hint="Entrez le preset"
-                app:layout_constraintBottom_toTopOf="@id/presetButton3"
-                app:layout_constraintEnd_toStartOf="@id/presetButton4"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/presetButton3"
+            <!-- LinearLayout horizontal pour regrouper EditText et le bouton -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Enregistrer comme preset"
+                android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/presetButton4"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0">
+
+                <!-- EditText -->
+                <EditText
+                    android:id="@+id/addTextPreset"
+                    android:layout_width="500px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Entrez le preset"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"/>
+
+                <!-- Button 3 -->
+                <Button
+                    android:id="@+id/presetButton3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Enregistrer comme preset"
+                    android:backgroundTint="@color/blue"
+                    android:textColor="@color/black"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"/>
+
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
+
 
 
     <!-- Cartes -->

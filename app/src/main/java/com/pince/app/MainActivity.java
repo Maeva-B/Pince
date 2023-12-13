@@ -52,6 +52,16 @@ public class MainActivity extends AppCompatActivity {
         TabLayout.Tab tab = tabLayout.getTabAt(0); // 0 pour le premier onglet, 1 pour le deuxième, etc.
         if (tab != null) {
             tab.select();
+            Button presetButton1 = findViewById(R.id.presetButton1);
+            Button presetButton2 = findViewById(R.id.presetButton2);
+            Button presetButton3 = findViewById(R.id.presetButton3);
+            EditText editTexteInput = findViewById(R.id.addTextPreset);
+            Spinner spinnerPreset = findViewById(R.id.spinner);
+            presetButton1.setVisibility(View.VISIBLE);
+            presetButton2.setVisibility(View.VISIBLE);
+            spinnerPreset.setVisibility(View.VISIBLE);
+            presetButton3.setVisibility(View.GONE);
+            editTexteInput.setVisibility(View.GONE);
         }
 
         // Définissez un écouteur de sélection d'onglet
