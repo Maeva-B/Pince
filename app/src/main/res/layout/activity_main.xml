@@ -102,7 +102,7 @@
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Personnalisable" />
+                    android:text="Ajouter un preset" />
             </com.google.android.material.tabs.TabLayout>
 
         </androidx.viewpager.widget.ViewPager>
@@ -132,7 +132,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@color/yellow"
-                android:text="Button 1"
+                android:text="Actionner la pince"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/presetButton2"
                 app:layout_constraintStart_toEndOf="@id/spinner"
@@ -143,7 +143,7 @@
                 android:id="@+id/presetButton2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Button 2"
+                android:text="Arret d’urgence"
                 android:background="@color/red"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -161,7 +161,7 @@
                 android:id="@+id/presetButton3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Button 3"
+                android:text="Enregistrer comme preset"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/presetButton4"
                 app:layout_constraintStart_toStartOf="parent"
