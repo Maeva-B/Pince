@@ -2,10 +2,14 @@
     <string name="app_name">Pince</string>
     <string name="vieillissement_de_la_pince">Vieillissement de la pince</string>
     <string name="nb_utilisations">15 utilisations</string>
+    <string name="newton">Force appliquée actuellement</string>
+    <string name="newtonValue">0,0 N/m²</string>
+
+    // fraise = 0,1 N/m²
 
     <string-array name="choices">
-        <item>titi</item>
-        <item>toto</item>
-        <item>tata</item>
+        <item>Fraise</item>
+        <item>Framboise</item>
+        <item>Œuf</item>
     </string-array>
 </resources>

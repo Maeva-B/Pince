@@ -184,13 +184,24 @@
 
                 <!-- EditText -->
                 <EditText
-                    android:id="@+id/addTextPreset"
-                    android:layout_width="200dp"
+                    android:id="@+id/nomPreset"
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_weight="1"
-                    android:hint="Entrez le preset" />
+                    android:hint="Entrez le nom de l'objet" />
+
+
+                <!-- EditText -->
+                <EditText
+                    android:id="@+id/forcePreset"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_weight="1"
+                    android:hint="Entrez la force à appliquer" />
 
                 <!-- Button 3 -->
                 <Button
@@ -273,7 +284,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/vieillissement_de_la_pince"
+                    android:text="@string/newton"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -281,7 +292,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="#E60B0B"
-                    android:text="@string/nb_utilisations"
+                    android:text="@string/newtonValue"
                     android:textSize="16sp" />
 
             </LinearLayout>

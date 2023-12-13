@@ -89,13 +89,15 @@ public class MainActivity extends AppCompatActivity {
             Button presetButton1 = findViewById(R.id.presetButton1);
             Button presetButton2 = findViewById(R.id.presetButton2);
             Button presetButton3 = findViewById(R.id.presetButton3);
-            EditText editTexteInput = findViewById(R.id.addTextPreset);
+            EditText nomPreset = findViewById(R.id.nomPreset);
+            EditText forcePreset = findViewById(R.id.forcePreset);
             Spinner spinnerPreset = findViewById(R.id.spinner);
             presetButton1.setVisibility(View.VISIBLE);
             presetButton2.setVisibility(View.VISIBLE);
             spinnerPreset.setVisibility(View.VISIBLE);
             presetButton3.setVisibility(View.GONE);
-            editTexteInput.setVisibility(View.GONE);
+            nomPreset.setVisibility(View.GONE);
+            forcePreset.setVisibility(View.GONE);
         }
 
         // Définissez un écouteur de sélection d'onglet
@@ -107,26 +109,30 @@ public class MainActivity extends AppCompatActivity {
                     Button presetButton1 = findViewById(R.id.presetButton1);
                     Button presetButton2 = findViewById(R.id.presetButton2);
                     Button presetButton3 = findViewById(R.id.presetButton3);
-                    EditText editTexteInput = findViewById(R.id.addTextPreset);
+                    EditText nomPreset = findViewById(R.id.nomPreset);
+                    EditText forcePreset = findViewById(R.id.forcePreset);
                     Spinner spinnerPreset = findViewById(R.id.spinner);
                     presetButton1.setVisibility(View.VISIBLE);
                     presetButton2.setVisibility(View.VISIBLE);
                     spinnerPreset.setVisibility(View.VISIBLE);
                     presetButton3.setVisibility(View.GONE);
-                    editTexteInput.setVisibility(View.GONE);
+                    nomPreset.setVisibility(View.GONE);
+                    forcePreset.setVisibility(View.GONE);
                 }
                 // L'onglet "Personnalisable" est sélectionné
                 else if (tab.getPosition() == 1) {
                     Button presetButton1 = findViewById(R.id.presetButton1);
                     Button presetButton2 = findViewById(R.id.presetButton2);
                     Button presetButton3 = findViewById(R.id.presetButton3);
-                    EditText editTexteInput = findViewById(R.id.addTextPreset);
+                    EditText nomPreset = findViewById(R.id.nomPreset);
+                    EditText forcePreset = findViewById(R.id.forcePreset);
                     Spinner spinnerPreset = findViewById(R.id.spinner);
                     presetButton1.setVisibility(View.GONE);
                     presetButton2.setVisibility(View.GONE);
                     spinnerPreset.setVisibility(View.GONE);
                     presetButton3.setVisibility(View.VISIBLE);
-                    editTexteInput.setVisibility(View.VISIBLE);
+                    nomPreset.setVisibility(View.VISIBLE);
+                    forcePreset.setVisibility(View.VISIBLE);
                 }
             }
 
