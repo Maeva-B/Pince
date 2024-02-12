@@ -134,7 +134,7 @@
 
                 <!-- Button 1 -->
                 <Button
-                    android:id="@+id/presetButton1"
+                    android:id="@+id/button_active_pince"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -149,7 +149,7 @@
 
                 <!-- Button 2 -->
                 <Button
-                    android:id="@+id/presetButton2"
+                    android:id="@+id/button_stop_pince"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -205,7 +205,7 @@
 
                 <!-- Button 3 -->
                 <Button
-                    android:id="@+id/presetButton3"
+                    android:id="@+id/button_save_preset"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -298,6 +298,18 @@
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/text_list_preset"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text=""
+            android:textSize="18sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
