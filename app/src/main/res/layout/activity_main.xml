@@ -185,23 +185,23 @@
                 <!-- EditText -->
                 <EditText
                     android:id="@+id/nomPreset"
-                    android:layout_width="100dp"
+                    android:layout_width="20dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_weight="1"
-                    android:hint="Entrez le nom de l'objet" />
+                    android:hint="Nom preset" />
 
 
                 <!-- EditText -->
                 <EditText
                     android:id="@+id/forcePreset"
-                    android:layout_width="100dp"
+                    android:layout_width="12dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_weight="1"
-                    android:hint="Entrez la force à appliquer" />
+                    android:hint="Force à appliquer" />
 
                 <!-- Button 3 -->
                 <Button
@@ -213,6 +213,18 @@
                     android:layout_weight="1"
                     android:backgroundTint="@color/blue"
                     android:text="Enregistrer comme preset"
+                    android:textColor="@color/black" />
+
+                <!-- Button 4 -->
+                <Button
+                    android:id="@+id/button_delete_all_preset"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/red"
+                    android:text="Supprimer tous les presets"
                     android:textColor="@color/black" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>

@@ -47,9 +47,11 @@ public class MainActivity extends AppCompatActivity {
         Button button_active_pince = findViewById(R.id.button_active_pince);
         Button button_stop_pince = findViewById(R.id.button_stop_pince);
         Button button_save_preset = findViewById(R.id.button_save_preset);
+        Button button_delete_all_preset = findViewById(R.id.button_delete_all_preset);
         EditText input_name_preset = findViewById(R.id.nomPreset);
         EditText input_force_preset = findViewById(R.id.forcePreset);
         Spinner select_preset = findViewById(R.id.spinner);
+
 
 
         // Récupérer le TextView pour la date et l'heure
@@ -82,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
             button_stop_pince.setVisibility(View.VISIBLE);
             select_preset.setVisibility(View.VISIBLE);
             button_save_preset.setVisibility(View.GONE);
+            button_delete_all_preset.setVisibility(View.GONE);
             input_name_preset.setVisibility(View.GONE);
             input_force_preset.setVisibility(View.GONE);
         }
@@ -96,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     button_stop_pince.setVisibility(View.VISIBLE);
                     select_preset.setVisibility(View.VISIBLE);
                     button_save_preset.setVisibility(View.GONE);
+                    button_delete_all_preset.setVisibility(View.GONE);
                     input_name_preset.setVisibility(View.GONE);
                     input_force_preset.setVisibility(View.GONE);
                 }
@@ -105,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
                     button_stop_pince.setVisibility(View.GONE);
                     select_preset.setVisibility(View.GONE);
                     button_save_preset.setVisibility(View.VISIBLE);
+                    button_delete_all_preset.setVisibility(View.VISIBLE);
                     input_name_preset.setVisibility(View.VISIBLE);
                     input_force_preset.setVisibility(View.VISIBLE);
                 }
@@ -122,19 +127,29 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        // Supprimer tous les presets
+        button_delete_all_preset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                supprimerTousLesPresets();
+                afficherPresets(select_preset);
+            }
+        });
+
         // Enregistrement des presets
         button_save_preset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String idPreset = "1"; // Vous pouvez générer un ID unique ou basé sur le temps
+
                 String nomPreset = input_name_preset.getText().toString();
                 String forcePreset = input_force_preset.getText().toString();
 
-                // Vérifiez si les champs sont bien remplis
+                // Vérifie si les champs sont bien remplis
                 if (!nomPreset.isEmpty() && !forcePreset.isEmpty()) {
-                    // Enregistrez les données dans un fichier
-                    // Si l'enregistrement est réussi, effacez les champs de texte et affichez un message de succès
+                    // Enregistre les données dans un fichier
+                    // Si l'enregistrement est réussi, efface les champs de texte et affiche un message de succès
                     if(savePresetsToFile(nomPreset, forcePreset)) {
+                        afficherPresets(select_preset);
                         input_name_preset.setText("");
                         input_force_preset.setText("");
                         Toast.makeText(MainActivity.this, "Données enregistrées", Toast.LENGTH_SHORT).show();
@@ -184,6 +199,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
+    private void supprimerTousLesPresets() {
+        File file = new File(getExternalFilesDir(null), "presets.csv");
+        if (file.exists()) {
+            if (file.delete()) {
+                Toast.makeText(MainActivity.this, "Tous les presets ont été supprimés", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "Erreur lors de la suppression des presets", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(MainActivity.this, "Aucun preset à supprimer", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
     // Méthode pour obtenir le dernier ID enregistré dans le fichier presets.csv
     private int getLastId() throws IOException {
         File file = new File(getExternalFilesDir(null), "presets.csv");
@@ -210,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // Affichage des presets enregistrés dans le Spinner sur l'onget "Preset"
+    // Affichage des presets enregistrés dans le Spinner sur l'onglet "Preset"
     void afficherPresets(Spinner spinner) {
         ArrayList<String> presetsList = new ArrayList<>(); // Pour stocker les données des presets
 
@@ -245,6 +276,11 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Erreur lors de la lecture du fichier presets.csv", Toast.LENGTH_SHORT).show();
         }
 
+        // Si la liste des presets est vide, ajoutez un message indiquant qu'il n'y a pas de presets disponibles
+        if (presetsList.isEmpty()) {
+            presetsList.add("Aucun preset disponible");
+        }
+
         // Créer un ArrayAdapter pour les données des presets
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, presetsList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -252,36 +288,6 @@ public class MainActivity extends AppCompatActivity {
         // Définir l'adaptateur pour le Spinner passé en argument
         spinner.setAdapter(adapter);
     }
-
-
-
-
-    // Utilisez des requêtes HTTP pour appeler les points d'accès de l'API PHP depuis l'application Android
-//    private void makeHttpRequest(String apiUrl) {
-//        try {
-//            URL url = new URL(apiUrl);
-//            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-//
-//            try {
-//                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-//                StringBuilder stringBuilder = new StringBuilder();
-//                String line;
-//
-//                while ((line = bufferedReader.readLine()) != null) {
-//                    stringBuilder.append(line).append("\n");
-//                }
-//
-//                bufferedReader.close();
-//                String response = stringBuilder.toString();
-//                // Traiter la réponse ici
-//
-//            } finally {
-//                urlConnection.disconnect();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 
 }
