@@ -3,6 +3,7 @@ package com.pince.app;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -12,6 +13,7 @@ import android.view.View;
 import com.google.android.material.tabs.TabLayout;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -50,10 +52,6 @@ public class MainActivity extends AppCompatActivity {
         Spinner select_preset = findViewById(R.id.spinner);
 
 
-
-        // Date et heure ---------------
-
-
         // Récupérer le TextView pour la date et l'heure
         TextView dateTimeTextView = findViewById(R.id.textViewDateTime);
 
@@ -66,19 +64,16 @@ public class MainActivity extends AppCompatActivity {
         dateTimeTextView.setText(formattedDate);
 
 
-        // --------------------------------
-
         // Appel de la méthode afficherPresets
-        afficherPresets();
+        // afficherPresets();
+        afficherPresets(select_preset);
 
-        // Onglets ---------------
 
         // Récupérez une référence à votre TabLayout
         TabLayout tabLayout = findViewById(R.id.tabLayout);
 
 
         // Sélectionnez l'onglet "Preset" par défaut
-
         TabLayout.Tab tab = tabLayout.getTabAt(0); // 0 pour le premier onglet, 1 pour le deuxième, etc.
 
         if (tab != null) {
@@ -126,11 +121,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // -----------------------------------------
-
-
-
-        // -----------------------------------------
 
         // Enregistrement des presets
         button_save_preset.setOnClickListener(new View.OnClickListener() {
@@ -177,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
             // Incrémenter l'ID pour obtenir le nouvel ID
             int newId = lastId + 1;
 
+            // Écrire les données dans le fichier
             FileOutputStream fos = new FileOutputStream(file, true);
             OutputStreamWriter osw = new OutputStreamWriter(fos);
 
@@ -219,10 +210,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // Affichage des presets enregistrés
-    void afficherPresets() {
-
-        TextView text_list_preset = findViewById(R.id.text_list_preset);
+    // Affichage des presets enregistrés dans le Spinner sur l'onget "Preset"
+    void afficherPresets(Spinner spinner) {
+        ArrayList<String> presetsList = new ArrayList<>(); // Pour stocker les données des presets
 
         try {
             File file = new File(getExternalFilesDir(null), "presets.csv");
@@ -238,13 +228,14 @@ public class MainActivity extends AppCompatActivity {
 
                 // 3 parties (idPreset, nomPreset, forcePreset)
                 if (parts.length == 3) {
-                    String idPreset = parts[0];
                     String nomPreset = parts[1];
                     String forcePreset = parts[2];
 
-                    // Afficher les données dans votre TextView
-                    String presetText = "ID: " + idPreset + ", Nom: " + nomPreset + ", Force: " + forcePreset;
-                    text_list_preset.append(presetText + "\n");
+                    // Créer la chaîne à afficher dans le Spinner
+                    String presetString = nomPreset + " - " + forcePreset + " Newton";
+
+                    // Ajouter la chaîne à la liste des presets
+                    presetsList.add(presetString);
                 }
             }
 
@@ -253,7 +244,16 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(MainActivity.this, "Erreur lors de la lecture du fichier presets.csv", Toast.LENGTH_SHORT).show();
         }
-    };
+
+        // Créer un ArrayAdapter pour les données des presets
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, presetsList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Définir l'adaptateur pour le Spinner passé en argument
+        spinner.setAdapter(adapter);
+    }
+
+
 
 
     // Utilisez des requêtes HTTP pour appeler les points d'accès de l'API PHP depuis l'application Android
