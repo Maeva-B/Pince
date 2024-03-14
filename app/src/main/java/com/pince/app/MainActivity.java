@@ -5,6 +5,8 @@ import androidx.core.app.ActivityCompat;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothSocket;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -27,17 +29,13 @@ import java.util.Locale;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import android.widget.Toast;
 
 // écriture et lecture de fichier
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.util.UUID;
 
@@ -64,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         EditText input_name_preset = findViewById(R.id.nomPreset);
         EditText input_force_preset = findViewById(R.id.forcePreset);
         Spinner select_preset = findViewById(R.id.spinner);
-
 
 
         // Récupérer le TextView pour la date et l'heure
@@ -143,7 +140,10 @@ public class MainActivity extends AppCompatActivity {
         button_active_pince.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                envoyerDonneesPince(v);
+                String reponse = connectBluetooth();
+                Toast.makeText(MainActivity.this, reponse, Toast.LENGTH_SHORT).show();
+
+                // envoyerDonneesPince(v);
             }
         });
 
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!nomPreset.isEmpty() && !forcePreset.isEmpty()) {
                     // Enregistre les données dans un fichier
                     // Si l'enregistrement est réussi, efface les champs de texte et affiche un message de succès
-                    if(savePresetsToFile(nomPreset, forcePreset)) {
+                    if (savePresetsToFile(nomPreset, forcePreset)) {
                         afficherPresets(select_preset);
                         input_name_preset.setText("");
                         input_force_preset.setText("");
@@ -188,6 +188,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private String connectBluetooth() {
+
         // ----------------- Partie bluetooth -----------------
         // basée sur la création d'un socket Bluetooth SPP (Serial Port Profile) pour envoyer des données
 
@@ -195,38 +199,74 @@ public class MainActivity extends AppCompatActivity {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (bluetoothAdapter == null) {
-            Toast.makeText(this, "Bluetooth non pris en charge sur cet appareil", Toast.LENGTH_SHORT).show();
-            return;
+            return "Bluetooth non pris en charge sur cet appareil";
         }
 
         // Message d'erreur si le Bluetooth n'est pas activé
         if (!bluetoothAdapter.isEnabled()) {
-            Toast.makeText(this, "Veuillez activer le Bluetooth", Toast.LENGTH_SHORT).show();
-            return;
+            return "Veuillez activer le Bluetooth";
         }
 
         // Obtenir une référence à l'appareil Bluetooth auquel on souhaite se connecter
-        // Adresse mac du module bluetooth : String deviceAddress = "60:8A:10:6A:B1:80";
+        // Adresse mac du module bluetooth : String deviceAddress = "60:8A:10:6A:B1:80"; /
+        //  =test : "6C:EC:EB:22:5C:BD"
         // Adresse mac du iphone maeva : String deviceAddress = "44:DA:30:8C:A7:07";
-        String deviceAddress = "60:8A:10:6A:B1:80";
+        // Adresse mac du téléphone benji : String deviceAddress = "E4:12:1D:3B:CF:AB";
+        String deviceAddress = "54:08:3B:C1:C0:4C";
         bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
+
+        // tester si le device est null
+        if (bluetoothDevice == null) {
+            return "Erreur lors de la connexion Bluetooth, le périphérique est null";
+        }
 
         // Connecter le socket Bluetooth
         try {
-            UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // UUID générique pour SPP (Serial Port Profile)
+
+//            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+//                // Demander la permission de se connecter au périphérique Bluetooth
+//                if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.BLUETOOTH_CONNECT)) {
+//                   ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.BLUETOOTH_CONNECT}, 1);
+//                } else {
+//                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.BLUETOOTH_CONNECT}, 1);
+//                }
+//                return "Erreur de connexion Bluetooth UUID 1";
+//            }
+
+            UUID uuid = UUID.fromString("0000aaa1-0000-1000-8000-aabbccddeeff"); // UUID
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Erreur de connexion Bluetooth", Toast.LENGTH_SHORT).show();
-                return;
+                // TODO: Consider calling
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.BLUETOOTH_CONNECT}, 1);
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
             }
-            bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(uuid);
-            bluetoothSocket.connect();
-            outputStream = bluetoothSocket.getOutputStream();
+
+            // bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(uuid);
+            // bluetoothSocket.connect();
+
+            bluetoothDevice.connectGatt(this, false, getCallBack);
+            // outputStream = bluetoothSocket.getOutputStream();
+
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Erreur de connexion Bluetooth", Toast.LENGTH_SHORT).show();
+            return "Erreur lors de la connexion Bluetooth UUID 2 : " + e.getMessage();
         }
 
+        return "Bluetooth connecté";
     }
+
+    private BluetoothGattCallback getCallBack = new BluetoothGattCallback() {
+
+        
+
+        @Override
+        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            super.onConnectionStateChange(gatt, status, newState);
+        }
+    };
 
     private boolean savePresetsToFile(String nomPreset, String forcePreset) {
         try {
@@ -258,8 +298,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
-
-
 
     private void supprimerTousLesPresets() {
         File file = new File(getExternalFilesDir(null), "presets.csv");
@@ -372,8 +410,7 @@ public class MainActivity extends AppCompatActivity {
             // Appeler la méthode pour envoyer les données via Bluetooth
             String donnees = "nomPreset=" + nomPreset + "&forcePreset=" + forcePreset;
             envoyerDonneesBluetooth(donnees);
-        }
-        else {
+        } else {
             Toast.makeText(MainActivity.this, "Erreur lors de la récupération des données du preset", Toast.LENGTH_SHORT).show();
         }
     }
@@ -394,7 +431,4 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "OutputStream est null, vérifiez la connexion Bluetooth. Données envoyées : " + donnees, Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
 }
