@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothSocket;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -140,6 +141,8 @@ public class MainActivity extends AppCompatActivity {
         button_active_pince.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // A changer à mettre au lancement de l'app
                 String reponse = connectBluetooth();
                 Toast.makeText(MainActivity.this, reponse, Toast.LENGTH_SHORT).show();
 
@@ -212,7 +215,11 @@ public class MainActivity extends AppCompatActivity {
         //  =test : "6C:EC:EB:22:5C:BD"
         // Adresse mac du iphone maeva : String deviceAddress = "44:DA:30:8C:A7:07";
         // Adresse mac du téléphone benji : String deviceAddress = "E4:12:1D:3B:CF:AB";
-        String deviceAddress = "54:08:3B:C1:C0:4C";
+
+        // String deviceAddress = "54:08:3B:C1:C0:4C";
+
+        String deviceAddress = "6C:EC:EB:22:5C:BD";
+
         bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
 
         // tester si le device est null
@@ -247,26 +254,50 @@ public class MainActivity extends AppCompatActivity {
             // bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(uuid);
             // bluetoothSocket.connect();
 
-            bluetoothDevice.connectGatt(this, false, getCallBack);
+
+            bluetoothDevice.connectGatt(this, false, gattCallBack);
             // outputStream = bluetoothSocket.getOutputStream();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Erreur lors de la connexion Bluetooth UUID 2 : " + e.getMessage();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return "Bluetooth connecté";
     }
 
-    private BluetoothGattCallback getCallBack = new BluetoothGattCallback() {
-
-        
+    private BluetoothGattCallback gattCallBack = new BluetoothGattCallback() {
 
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            super.onConnectionStateChange(gatt, status, newState);
+            System.out.println("onConnectionStateChange");
+            //super.onConnectionStateChange(gatt, status, newState);
+            gatt.discoverServices();
+
+            if(newState == BluetoothGatt.STATE_CONNECTED){
+                System.out.println("Connected to GATT server.");
+            } else if(newState == BluetoothGatt.STATE_DISCONNECTED){
+                System.out.println("Disconnected from GATT server.");
+            }
+        }
+
+        @Override
+        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            System.out.println("onServicesDiscovered");
+            gatt.readCharacteristic(gatt.getServices("0000aaa1-0000-1000-8000-aabbccddeeff").get(0).getCharacteristics().get(0));
+        }
+
+        @Override
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            // System.out.println("onCharacteristicRead");
+            //super.onCharacteristicRead(gatt, characteristic, status);
+
+            String value = characteristic.getValue().toString();
+            System.out.println("onCharacteristicRead value : " + value);
         }
     };
+
+
 
     private boolean savePresetsToFile(String nomPreset, String forcePreset) {
         try {
