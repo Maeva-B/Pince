@@ -1,7 +1,12 @@
 package com.pince.app;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -12,6 +17,7 @@ import android.view.View;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,8 +39,15 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int REQUEST_ENABLE_BT = 1;
+    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothDevice bluetoothDevice;
+    private BluetoothSocket bluetoothSocket;
+    private OutputStream outputStream;
 
 
     @Override
@@ -126,6 +139,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // listener pour le bouton "Activer la pince"
+        button_active_pince.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                envoyerDonneesPince(v);
+            }
+        });
+
 
         // Supprimer tous les presets
         button_delete_all_preset.setOnClickListener(new View.OnClickListener() {
@@ -165,6 +186,45 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+        // ----------------- Partie bluetooth -----------------
+        // basée sur la création d'un socket Bluetooth SPP (Serial Port Profile) pour envoyer des données
+
+        // Vérifier si le périphérique prend en charge le Bluetooth
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if (bluetoothAdapter == null) {
+            Toast.makeText(this, "Bluetooth non pris en charge sur cet appareil", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Message d'erreur si le Bluetooth n'est pas activé
+        if (!bluetoothAdapter.isEnabled()) {
+            Toast.makeText(this, "Veuillez activer le Bluetooth", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Obtenir une référence à l'appareil Bluetooth auquel on souhaite se connecter
+        // Adresse mac du module bluetooth : String deviceAddress = "60:8A:10:6A:B1:80";
+        // Adresse mac du iphone maeva : String deviceAddress = "44:DA:30:8C:A7:07";
+        String deviceAddress = "60:8A:10:6A:B1:80";
+        bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
+
+        // Connecter le socket Bluetooth
+        try {
+            UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // UUID générique pour SPP (Serial Port Profile)
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Erreur de connexion Bluetooth", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(uuid);
+            bluetoothSocket.connect();
+            outputStream = bluetoothSocket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Erreur de connexion Bluetooth", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -288,6 +348,53 @@ public class MainActivity extends AppCompatActivity {
         // Définir l'adaptateur pour le Spinner passé en argument
         spinner.setAdapter(adapter);
     }
+
+    // Méthode pour envoyer les données du preset sélectionné à la pince, via bluetooth
+    public void envoyerDonneesPince(View view) {
+
+        // Récupérer le Spinner
+        Spinner select_preset = findViewById(R.id.spinner);
+
+        // Récupérer la valeur sélectionnée dans le Spinner
+        String selectedPreset = select_preset.getSelectedItem().toString();
+
+        // Diviser la chaîne en utilisant le séparateur " - "
+        String[] parts = selectedPreset.split(" - ");
+
+        // 2 parties (nomPreset, forcePreset)
+        if (parts.length == 2) {
+            String nomPreset = parts[0];
+            String forcePreset = parts[1].replace(" Newton", "");
+
+            // Afficher un message pour vérifier si les données sont correctes
+            Toast.makeText(MainActivity.this, "Nom du preset : " + nomPreset + ", Force du preset : " + forcePreset, Toast.LENGTH_SHORT).show();
+
+            // Appeler la méthode pour envoyer les données via Bluetooth
+            String donnees = "nomPreset=" + nomPreset + "&forcePreset=" + forcePreset;
+            envoyerDonneesBluetooth(donnees);
+        }
+        else {
+            Toast.makeText(MainActivity.this, "Erreur lors de la récupération des données du preset", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    // Méthode pour envoyer une chaîne de caractères via Bluetooth
+    private void envoyerDonneesBluetooth(String donnees) {
+        if (outputStream != null) {
+            try {
+                outputStream.write(donnees.getBytes());
+                Toast.makeText(this, "Données envoyées via Bluetooth: " + donnees, Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Erreur lors de l'envoi des données via Bluetooth", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+
+            Toast.makeText(this, "OutputStream est null, vérifiez la connexion Bluetooth. Données envoyées : " + donnees, Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
 
 }
