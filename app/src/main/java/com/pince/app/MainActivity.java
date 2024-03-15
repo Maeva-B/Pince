@@ -2,7 +2,12 @@ package com.pince.app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,6 +17,7 @@ import android.view.View;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,8 +39,16 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
+import java.util.Set;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    
+    private static final int REQUEST_ENABLE_BT = 1; // Constante pour identifier le résultat de la demande d'activation du Bluetooth
+    // private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // UUID pour le module Bluetooth protocol SPP utilisé pour le module Bluetooth HC-05
+    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // UUID pour le module Bluetooth protocol SPP utilisé pour le module Bluetooth HC-05
 
 
     @Override
@@ -42,6 +56,30 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
+        // ---- Connexion au module Bluetooth ----
+
+        // Vérifier et activer le Bluetooth
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+
+        // Connexion au module Bluetooth
+        try {
+            connectToBluetoothDevice();
+            Toast.makeText(MainActivity.this, "Connexion au module Bluetooth réussie", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            // Toast
+            Toast.makeText(MainActivity.this, "Erreur lors de la connexion au module Bluetooth : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+
+        // --------------------------------------
+
 
         // Déclaration des variables
         Button button_active_pince = findViewById(R.id.button_active_pince);
@@ -167,6 +205,48 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+
+    private void connectToBluetoothDevice() throws IOException {
+        System.out.println("Connexion au module Bluetooth.....");
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) {
+                System.out.println("Nom du périphérique : " + device.getName());
+                if (device.getName().equals("=test")) {
+                    System.out.println("Périphérique trouvé");
+
+
+                    BluetoothSocket socket = device.createRfcommSocketToServiceRecord(MY_UUID);
+
+                    try {
+                        socket.connect();
+                        System.out.println("Connexion réussie au périphérique Bluetooth");
+                    } catch (IOException e) {
+                        System.out.println("Erreur lors de la connexion au périphérique Bluetooth : " + e.getMessage());
+                    }
+
+                    OutputStream outputStream = socket.getOutputStream();
+                    try {
+                        outputStream.write("ok".getBytes());
+                        outputStream.flush();
+                        System.out.println("Message envoyé au module Bluetooth");
+                    } catch (IOException e) {
+                        System.out.println("Erreur lors de l'envoi du message au module Bluetooth : " + e.getMessage());
+                    }
+
+
+                    // N'oubliez pas de fermer le socket et le flux de sortie
+                    outputStream.close();
+
+                    socket.close();
+                    break;
+                }
+            }
+        }
+    }
+
 
     private boolean savePresetsToFile(String nomPreset, String forcePreset) {
         try {
