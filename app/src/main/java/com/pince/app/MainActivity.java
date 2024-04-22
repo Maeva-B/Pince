@@ -36,9 +36,11 @@ import java.io.FileInputStream;
 
 public class MainActivity extends AppCompatActivity {
 
+    private BluetoothHelper bluetoothHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -52,6 +54,38 @@ public class MainActivity extends AppCompatActivity {
         EditText input_force_preset = findViewById(R.id.forcePreset);
         Spinner select_preset = findViewById(R.id.spinner);
 
+
+        // bluetooth
+        bluetoothHelper = new BluetoothHelper();
+
+        button_active_pince.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            bluetoothHelper.connect("60:8A:10:6A:B1:80"); // Adresse MAC du module bluetooth
+                            System.out.println("connexion ok");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            System.out.println("Erreur lors de la connexion : " + e.getMessage());}
+                        try {
+                            bluetoothHelper.sendCharacter('o');
+                            System.out.println("envoi caractère ok");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            System.out.println("envoi caractère KO nul");
+                        } finally {
+                            try {
+                                bluetoothHelper.disconnect();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).start();
+            }
+        });
 
 
         // Récupérer le TextView pour la date et l'heure
@@ -148,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!nomPreset.isEmpty() && !forcePreset.isEmpty()) {
                     // Enregistre les données dans un fichier
                     // Si l'enregistrement est réussi, efface les champs de texte et affiche un message de succès
-                    if(savePresetsToFile(nomPreset, forcePreset)) {
+                    if (savePresetsToFile(nomPreset, forcePreset)) {
                         afficherPresets(select_preset);
                         input_name_preset.setText("");
                         input_force_preset.setText("");
@@ -198,7 +232,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
-
 
 
     private void supprimerTousLesPresets() {
