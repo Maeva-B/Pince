@@ -46,9 +46,7 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity {
 
 
-    
-    private static final int REQUEST_ENABLE_BT = 1; // Constante pour identifier le résultat de la demande d'activation du Bluetooth
-    // private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // UUID pour le module Bluetooth protocol SPP utilisé pour le module Bluetooth HC-05
+    private static final int REQUEST_ENABLE_BT = 1;
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // UUID pour le module Bluetooth protocol SPP utilisé pour le module Bluetooth HC-05
 
 
@@ -57,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
 
         // ---- Connexion au module Bluetooth ----
@@ -98,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
         Spinner select_preset = findViewById(R.id.spinner);
 
 
-
         // Récupérer le TextView pour la date et l'heure
         TextView dateTimeTextView = findViewById(R.id.textViewDateTime);
 
@@ -116,13 +112,11 @@ public class MainActivity extends AppCompatActivity {
         afficherPresets(select_preset);
 
 
-        // Récupérez une référence à votre TabLayout
         TabLayout tabLayout = findViewById(R.id.tabLayout);
 
 
-        // Sélectionnez l'onglet "Preset" par défaut
+        // Sélectionner l'onglet "Preset" par défaut
         TabLayout.Tab tab = tabLayout.getTabAt(0); // 0 pour le premier onglet, 1 pour le deuxième, etc.
-
         if (tab != null) {
             tab.select();
             button_active_pince.setVisibility(View.VISIBLE);
@@ -134,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             input_force_preset.setVisibility(View.GONE);
         }
 
-        // Définissez un écouteur de sélection d'onglet
+        // Définir un écouteur de sélection d'onglet
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -194,18 +188,18 @@ public class MainActivity extends AppCompatActivity {
                 if (!nomPreset.isEmpty() && !forcePreset.isEmpty()) {
                     // Enregistre les données dans un fichier
                     // Si l'enregistrement est réussi, efface les champs de texte et affiche un message de succès
-                    if(savePresetsToFile(nomPreset, forcePreset)) {
+                    if (savePresetsToFile(nomPreset, forcePreset)) {
                         afficherPresets(select_preset);
                         input_name_preset.setText("");
                         input_force_preset.setText("");
                         Toast.makeText(MainActivity.this, "Données enregistrées", Toast.LENGTH_SHORT).show();
                     }
-                    // Sinon, affichez un message d'erreur
+                    // Sinon, affiche un message d'erreur
                     else {
                         Toast.makeText(MainActivity.this, "Erreur lors de l'enregistrement, la méthode savePresetsToFile à retourné false", Toast.LENGTH_SHORT).show();
                     }
                 }
-                // Sinon, affichez un message pour demander à l'utilisateur de remplir tous les champs
+                // Sinon, affiche un message pour demander à l'utilisateur de remplir tous les champs
                 else {
                     Toast.makeText(MainActivity.this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
                 }
@@ -213,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        // Ensuite, définissez les écouteurs de clic pour les boutons "On" et "Off" afin d'envoyer les valeurs appropriées
+        // Définir les écouteurs de clic pour les boutons "On" et "Off"
         button_on.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -221,11 +215,11 @@ public class MainActivity extends AppCompatActivity {
                     if (outputStream != null) {
                         outputStream.write(79); // Envoyer 79 lorsque le bouton "On" est pressé
                         outputStream.flush();
-                        Toast.makeText(MainActivity.this, "Command On envoyée", Toast.LENGTH_SHORT).show();
-                        System.out.println("Command On envoyée");
+                        Toast.makeText(MainActivity.this, "Ouverture de pince envoyée", Toast.LENGTH_SHORT).show();
+                        System.out.println("Ouverture de pince envoyée");
                     } else {
-                        Toast.makeText(MainActivity.this, "Bluetooth non connecté", Toast.LENGTH_SHORT).show();
-                        System.out.println("Bluetooth non connecté");
+                        Toast.makeText(MainActivity.this, "Erreur - L'ouverture de la pince a echoué", Toast.LENGTH_SHORT).show();
+                        System.out.println("Erreur - L'ouverture de la pince a echoué");
                     }
                 } catch (IOException e) {
                     Toast.makeText(MainActivity.this, "Erreur d'envoi : " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -240,9 +234,11 @@ public class MainActivity extends AppCompatActivity {
                     if (outputStream != null) {
                         outputStream.write(70); // Envoyer 70 lorsque le bouton "Off" est pressé
                         outputStream.flush();
-                        Toast.makeText(MainActivity.this, "Command Off envoyée", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Fermeture de pince envoyée", Toast.LENGTH_SHORT).show();
+                        System.out.println("Fermeture de pince envoyée");
                     } else {
-                        Toast.makeText(MainActivity.this, "Bluetooth non connecté", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Erreur - La fermeture de la pince a echoué", Toast.LENGTH_SHORT).show();
+                        System.out.println("Erreur - La fermeture de la pince a echoué");
                     }
                 } catch (IOException e) {
                     Toast.makeText(MainActivity.this, "Erreur d'envoi : " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -255,8 +251,10 @@ public class MainActivity extends AppCompatActivity {
     // Variables pour le Bluetooth socket et output stream
     private BluetoothSocket bluetoothSocket;
     private OutputStream outputStream;
+    private InputStream inputStream;
 
-    // Modifier connectToBluetoothDevice pour initialiser les variables au lieu de les fermer à la fin
+
+    // Methode de connexion au bluetooth
     private void connectToBluetoothDevice() throws IOException {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
@@ -265,7 +263,10 @@ public class MainActivity extends AppCompatActivity {
             if (device.getName().equals("HC-05")) {
                 bluetoothSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
                 bluetoothSocket.connect();
+
                 outputStream = bluetoothSocket.getOutputStream();
+                inputStream = bluetoothSocket.getInputStream();
+
                 Toast.makeText(MainActivity.this, "Bluetooth connecté", Toast.LENGTH_SHORT).show();
                 System.out.println("Bluetooth connecté");
                 break;
@@ -274,8 +275,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    // Fermer le Bluetooth à la fin de l'application
+    // Fermer le bluetooth à la fin de l'application
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -292,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    // Sauvgarde des presets
     private boolean savePresetsToFile(String nomPreset, String forcePreset) {
         try {
             File file = new File(getExternalFilesDir(null), "presets.csv");
@@ -324,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    // Suppression de tous les presets
     private void supprimerTousLesPresets() {
         File file = new File(getExternalFilesDir(null), "presets.csv");
         if (file.exists()) {
