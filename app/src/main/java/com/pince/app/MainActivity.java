@@ -1,8 +1,13 @@
 package com.pince.app;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,27 +26,40 @@ import java.util.Locale;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import android.widget.Toast;
 
 // écriture et lecture de fichier
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.InputStreamReader;
 import java.io.FileInputStream;
+
+
+// Bluetooth
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+
+import java.io.OutputStream;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Bluetooth
+    public BluetoothAdapter btAdapter;
+    public BluetoothDevice btDevice;
+    public BluetoothSocket btSocket;
+
+    public static final String SERVICE_ID = "00001101-0000-1000-8000-00805F9B34FB"; //SPP UUID
+    public static final String SERVICE_ADDRESS = "60:8A:10:6A:B1:80"; // HC-05 BT ADDRESS
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         // Déclaration des variables
         Button button_active_pince = findViewById(R.id.button_active_pince);
@@ -51,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         EditText input_name_preset = findViewById(R.id.nomPreset);
         EditText input_force_preset = findViewById(R.id.forcePreset);
         Spinner select_preset = findViewById(R.id.spinner);
-
 
 
         // Récupérer le TextView pour la date et l'heure
@@ -77,6 +94,47 @@ public class MainActivity extends AppCompatActivity {
 
         // Sélectionnez l'onglet "Preset" par défaut
         TabLayout.Tab tab = tabLayout.getTabAt(0); // 0 pour le premier onglet, 1 pour le deuxième, etc.
+
+
+        // Bluetooth
+        // Configuration Bluetooth
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+        btDevice = btAdapter.getRemoteDevice(SERVICE_ADDRESS);
+
+        if (btAdapter == null) {
+            Toast.makeText(getApplicationContext(), "Bluetooth not available", Toast.LENGTH_LONG).show();
+        } else {
+            if (!btAdapter.isEnabled()) {
+                Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableIntent, 3);
+            } else {
+                // Passez le contexte et l'appareil Bluetooth
+                ConnectThread connectThread = new ConnectThread(MainActivity.this, btDevice);
+                connectThread.start();
+            }
+        }
+
+        button_active_pince.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (btSocket != null) {
+                    try {
+                        OutputStream out = btSocket.getOutputStream();
+                        out.write(("o").getBytes());
+                    } catch (IOException e) {
+                        // Gérer les erreurs d'écriture
+                        Log.e("Bluetooth", "Erreur lors de l'envoi de données via Bluetooth: " + e.getMessage());
+                        Toast.makeText(MainActivity.this, "Erreur lors de l'envoi de données via Bluetooth", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    // Socket Bluetooth non disponible
+                    Log.e("Bluetooth", "Socket Bluetooth non disponible");
+                    Toast.makeText(MainActivity.this, "Socket Bluetooth non disponible", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
 
         if (tab != null) {
             tab.select();
@@ -124,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
                 // Ne rien faire ici
             }
+
         });
 
 
@@ -288,6 +347,56 @@ public class MainActivity extends AppCompatActivity {
         // Définir l'adaptateur pour le Spinner passé en argument
         spinner.setAdapter(adapter);
     }
+
+
+    public class ConnectThread extends Thread {
+        private final BluetoothSocket thisSocket;
+        private final BluetoothDevice thisDevice;
+        private final Context context; // Bien initialiser le contexte
+
+        public ConnectThread(Context context, BluetoothDevice device) {
+            this.context = context; // Contexte correctement initialisé
+            BluetoothSocket tmp = null;
+            thisDevice = device;
+
+            try {
+                tmp = thisDevice.createRfcommSocketToServiceRecord(UUID.fromString(SERVICE_ID));
+            } catch (IOException e) {
+                Log.e("TEST", "Can't connect to service");
+            }
+            thisSocket = tmp;
+        }
+
+        public void run() {
+            if (ContextCompat.checkSelfPermission(context, "android.permission.BLUETOOTH_SCAN") == PackageManager.PERMISSION_GRANTED) {
+                btAdapter.cancelDiscovery();
+            } else {
+                Log.e("TEST", "Permission BLUETOOTH_SCAN non accordée");
+                return;
+            }
+
+            if (thisSocket != null) {
+                if (ContextCompat.checkSelfPermission(context, "android.permission.BLUETOOTH_CONNECT") == PackageManager.PERMISSION_GRANTED) {
+                    try {
+                        thisSocket.connect();
+                    } catch (IOException e) {
+                        Log.e("TEST", "Can't connect to Bluetooth socket");
+                        try {
+                            thisSocket.close();
+                        } catch (IOException closeException) {
+                            Log.e("TEST", "Can't close Bluetooth socket");
+                        }
+                    }
+                } else {
+                    Log.e("TEST", "Permission BLUETOOTH_CONNECT non accordée");
+                }
+            } else {
+                Log.e("TEST", "Bluetooth socket not initialized");
+            }
+        }
+    }
+
+
 
 
 }
