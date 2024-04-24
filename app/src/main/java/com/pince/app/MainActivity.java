@@ -17,6 +17,7 @@ import android.view.View;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -72,9 +73,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             connectToBluetoothDevice();
             Toast.makeText(MainActivity.this, "Connexion au module Bluetooth réussie", Toast.LENGTH_SHORT).show();
+            System.out.println("Connexion au module Bluetooth réussie");
         } catch (IOException e) {
             // Toast
             Toast.makeText(MainActivity.this, "Erreur lors de la connexion au module Bluetooth : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            System.out.println("Erreur lors de la connexion au module Bluetooth : " + e.getMessage());
         }
 
 
@@ -214,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
                 System.out.println("Nom du périphérique : " + device.getName());
-                if (device.getName().equals("=test")) {
+                if (device.getName().equals("HC-05")) {
                     System.out.println("Périphérique trouvé");
 
 
@@ -227,9 +230,12 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("Erreur lors de la connexion au périphérique Bluetooth : " + e.getMessage());
                     }
 
+
+
                     OutputStream outputStream = socket.getOutputStream();
                     try {
-                        outputStream.write("ok".getBytes());
+                        // outputStream.write("P".getBytes());
+                        outputStream.write(79);
                         outputStream.flush();
                         System.out.println("Message envoyé au module Bluetooth");
                     } catch (IOException e) {
@@ -237,9 +243,37 @@ public class MainActivity extends AppCompatActivity {
                     }
 
 
-                    // N'oubliez pas de fermer le socket et le flux de sortie
-                    outputStream.close();
 
+                    // test
+//                    InputStream inputStream = socket.getInputStream();
+//                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+//
+//                    System.out.println("Envoie donnée");
+//
+//                    try {
+//                        String receivedData;
+//                        // Lire les messages jusqu'à ce qu'il n'y en ait plus
+//                        while ((receivedData = reader.readLine()) != null) {
+//                            // Traitez chaque message reçu
+//                            System.out.println("Message reçu du module Bluetooth : " + receivedData);
+//                        }
+//
+//                    } catch (IOException e) {
+//                        System.err.println("Erreur lors de la lecture du message : " + e.getMessage());
+//
+//                    } finally {
+//                        // Fermer les ressources
+//                        try {
+//                            reader.close();  // Fermez le BufferedReader
+//                            inputStream.close();  // Fermez le flux d'entrée
+//                            socket.close();  // Fermez le socket Bluetooth
+//                        } catch (IOException e) {
+//                            System.err.println("Erreur lors de la fermeture des ressources : " + e.getMessage());
+//                        }
+//                    }
+
+                    // fermer le socket et le flux de sortie
+                    outputStream.close();
                     socket.close();
                     break;
                 }
