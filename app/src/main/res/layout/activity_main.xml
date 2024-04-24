@@ -322,6 +322,46 @@
             android:text=""
             android:textSize="18sp"
             android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="613dp"
+        android:layout_height="78dp"
+        android:layout_marginTop="576dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/button_pince_on"
+            android:layout_width="229dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/green"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:padding="8dp"
+            android:text="ACTIONNER LA PINCE (79)"
+            android:textColor="@color/black"
+            tools:layout_editor_absoluteX="267dp"
+            tools:layout_editor_absoluteY="586dp" />
+
+        <Button
+            android:id="@+id/button_pince_off"
+            android:layout_width="252dp"
+            android:layout_height="43dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/red"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:padding="8dp"
+            android:text="STOPER LA PINCE (70)"
+            android:textColor="@color/black"
+            tools:layout_editor_absoluteX="502dp"
+            tools:layout_editor_absoluteY="586dp" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -89,6 +89,10 @@ public class MainActivity extends AppCompatActivity {
         Button button_stop_pince = findViewById(R.id.button_stop_pince);
         Button button_save_preset = findViewById(R.id.button_save_preset);
         Button button_delete_all_preset = findViewById(R.id.button_delete_all_preset);
+
+        Button button_on = findViewById(R.id.button_pince_on);
+        Button button_off = findViewById(R.id.button_pince_off);
+
         EditText input_name_preset = findViewById(R.id.nomPreset);
         EditText input_force_preset = findViewById(R.id.forcePreset);
         Spinner select_preset = findViewById(R.id.spinner);
@@ -165,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
                 // Ne rien faire ici
             }
+
         });
 
 
@@ -207,77 +212,82 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        // Ensuite, définissez les écouteurs de clic pour les boutons "On" et "Off" afin d'envoyer les valeurs appropriées
+        button_on.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    if (outputStream != null) {
+                        outputStream.write(79); // Envoyer 79 lorsque le bouton "On" est pressé
+                        outputStream.flush();
+                        Toast.makeText(MainActivity.this, "Command On envoyée", Toast.LENGTH_SHORT).show();
+                        System.out.println("Command On envoyée");
+                    } else {
+                        Toast.makeText(MainActivity.this, "Bluetooth non connecté", Toast.LENGTH_SHORT).show();
+                        System.out.println("Bluetooth non connecté");
+                    }
+                } catch (IOException e) {
+                    Toast.makeText(MainActivity.this, "Erreur d'envoi : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        button_off.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    if (outputStream != null) {
+                        outputStream.write(70); // Envoyer 70 lorsque le bouton "Off" est pressé
+                        outputStream.flush();
+                        Toast.makeText(MainActivity.this, "Command Off envoyée", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Bluetooth non connecté", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (IOException e) {
+                    Toast.makeText(MainActivity.this, "Erreur d'envoi : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
+
+    // Variables pour le Bluetooth socket et output stream
+    private BluetoothSocket bluetoothSocket;
+    private OutputStream outputStream;
+
+    // Modifier connectToBluetoothDevice pour initialiser les variables au lieu de les fermer à la fin
+    private void connectToBluetoothDevice() throws IOException {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+
+        for (BluetoothDevice device : pairedDevices) {
+            if (device.getName().equals("HC-05")) {
+                bluetoothSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                bluetoothSocket.connect();
+                outputStream = bluetoothSocket.getOutputStream();
+                Toast.makeText(MainActivity.this, "Bluetooth connecté", Toast.LENGTH_SHORT).show();
+                System.out.println("Bluetooth connecté");
+                break;
+            }
+        }
     }
 
 
-    private void connectToBluetoothDevice() throws IOException {
-        System.out.println("Connexion au module Bluetooth.....");
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-        if (pairedDevices.size() > 0) {
-            for (BluetoothDevice device : pairedDevices) {
-                System.out.println("Nom du périphérique : " + device.getName());
-                if (device.getName().equals("HC-05")) {
-                    System.out.println("Périphérique trouvé");
 
-
-                    BluetoothSocket socket = device.createRfcommSocketToServiceRecord(MY_UUID);
-
-                    try {
-                        socket.connect();
-                        System.out.println("Connexion réussie au périphérique Bluetooth");
-                    } catch (IOException e) {
-                        System.out.println("Erreur lors de la connexion au périphérique Bluetooth : " + e.getMessage());
-                    }
-
-
-
-                    OutputStream outputStream = socket.getOutputStream();
-                    try {
-                        // outputStream.write("P".getBytes());
-                        outputStream.write(79);
-                        outputStream.flush();
-                        System.out.println("Message envoyé au module Bluetooth");
-                    } catch (IOException e) {
-                        System.out.println("Erreur lors de l'envoi du message au module Bluetooth : " + e.getMessage());
-                    }
-
-
-
-                    // test
-//                    InputStream inputStream = socket.getInputStream();
-//                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-//
-//                    System.out.println("Envoie donnée");
-//
-//                    try {
-//                        String receivedData;
-//                        // Lire les messages jusqu'à ce qu'il n'y en ait plus
-//                        while ((receivedData = reader.readLine()) != null) {
-//                            // Traitez chaque message reçu
-//                            System.out.println("Message reçu du module Bluetooth : " + receivedData);
-//                        }
-//
-//                    } catch (IOException e) {
-//                        System.err.println("Erreur lors de la lecture du message : " + e.getMessage());
-//
-//                    } finally {
-//                        // Fermer les ressources
-//                        try {
-//                            reader.close();  // Fermez le BufferedReader
-//                            inputStream.close();  // Fermez le flux d'entrée
-//                            socket.close();  // Fermez le socket Bluetooth
-//                        } catch (IOException e) {
-//                            System.err.println("Erreur lors de la fermeture des ressources : " + e.getMessage());
-//                        }
-//                    }
-
-                    // fermer le socket et le flux de sortie
-                    outputStream.close();
-                    socket.close();
-                    break;
-                }
+    // Fermer le Bluetooth à la fin de l'application
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            if (outputStream != null) {
+                outputStream.close();
             }
+            if (bluetoothSocket != null) {
+                bluetoothSocket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
