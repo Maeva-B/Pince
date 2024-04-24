@@ -217,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
                         outputStream.flush();
                         Toast.makeText(MainActivity.this, "Ouverture de pince envoyée", Toast.LENGTH_SHORT).show();
                         System.out.println("Ouverture de pince envoyée");
+                        readBluetoothResponse(); // Lire la réponse après l'envoi
                     } else {
                         Toast.makeText(MainActivity.this, "Erreur - L'ouverture de la pince a echoué", Toast.LENGTH_SHORT).show();
                         System.out.println("Erreur - L'ouverture de la pince a echoué");
@@ -236,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
                         outputStream.flush();
                         Toast.makeText(MainActivity.this, "Fermeture de pince envoyée", Toast.LENGTH_SHORT).show();
                         System.out.println("Fermeture de pince envoyée");
+                        readBluetoothResponse(); // Lire la réponse après l'envoi
                     } else {
                         Toast.makeText(MainActivity.this, "Erreur - La fermeture de la pince a echoué", Toast.LENGTH_SHORT).show();
                         System.out.println("Erreur - La fermeture de la pince a echoué");
@@ -413,6 +415,80 @@ public class MainActivity extends AppCompatActivity {
         // Définir l'adaptateur pour le Spinner passé en argument
         spinner.setAdapter(adapter);
     }
+
+
+//    private void readBluetoothResponse() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//
+//                    System.out.println("Etape 1 lecture");
+//
+//                    if (inputStream != null) {
+//
+//                        System.out.println("lecture de la réponse");
+//
+//                        byte[] buffer = new byte[1024]; // Taille du tampon pour stocker les données entrantes
+//                        int bytesRead;
+//
+//                        // Lire les données du module Bluetooth
+//                        while ((bytesRead = inputStream.read(buffer)) != -1) {
+//                            final String response = new String(buffer, 0, bytesRead); // Convertir en chaîne de caractères
+//                            runOnUiThread(new Runnable() { // Mettre à jour l'interface utilisateur
+//                                @Override
+//                                public void run() {
+//                                    Toast.makeText(MainActivity.this, "Réponse reçue : " + response, Toast.LENGTH_SHORT).show();
+//                                    System.out.println("Réponse reçue : " + response);
+//                                }
+//                            });
+//                        }
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
+//    }
+
+    private void readBluetoothResponse() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (inputStream != null) {
+                        StringBuilder completeResponse = new StringBuilder(); // Pour stocker la chaîne complète
+                        byte[] buffer = new byte[1024]; // Taille du tampon
+                        int bytesRead;
+
+                        // Lire les données tant qu'il y a des données à lire
+                        while ((bytesRead = inputStream.read(buffer)) != -1) {
+                            String chunk = new String(buffer, 0, bytesRead); // Convertir le morceau en chaîne
+                            completeResponse.append(chunk); // Ajouter à la réponse complète
+
+                            if (chunk.contains("\n")) {
+                                 break; // Arrête de lire si caractère de fin
+                            }
+                        }
+
+                        // Transférer la réponse complète à l'interface utilisateur
+                        final String response = completeResponse.toString();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Réponse complète : " + response, Toast.LENGTH_SHORT).show();
+                                // Vous pouvez aussi afficher la réponse dans un TextView ou autre
+                            }
+                        });
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
 
 
 }
